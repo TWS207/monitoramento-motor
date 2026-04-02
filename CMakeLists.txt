@@ -55,7 +55,13 @@ target_include_directories(sis-monitoramento PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(sis-monitoramento 
-        
+        src/main.c
+        src/app.c
+        src/joystick.c
+        src/status.c
+        src/outputs.c
+        src/display.c
+        src/ssd1306.c
         )
 
 pico_add_extra_outputs(sis-monitoramento)
