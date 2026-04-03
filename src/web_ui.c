@@ -79,6 +79,7 @@ static const char pagina_html[] =
 static err_t enviar_resposta(struct tcp_pcb *cliente, const char *tipo, const char *corpo) {
     char cabecalho[256];
     int tamanho_corpo = (int)strlen(corpo);
+    err_t erro;
 
     snprintf(
         cabecalho,
@@ -91,10 +92,24 @@ static err_t enviar_resposta(struct tcp_pcb *cliente, const char *tipo, const ch
         tamanho_corpo
     );
 
-    tcp_write(cliente, cabecalho, strlen(cabecalho), TCP_WRITE_FLAG_COPY);
-    tcp_write(cliente, corpo, tamanho_corpo, TCP_WRITE_FLAG_COPY);
-    tcp_output(cliente);
-    return ERR_OK;
+    erro = tcp_write(cliente, cabecalho, strlen(cabecalho), TCP_WRITE_FLAG_COPY);
+    if (erro != ERR_OK) {
+        return erro;
+    }
+
+    erro = tcp_write(cliente, corpo, tamanho_corpo, TCP_WRITE_FLAG_COPY);
+    if (erro != ERR_OK) {
+        return erro;
+    }
+
+    return tcp_output(cliente);
+}
+
+static void encerrar_cliente(struct tcp_pcb *cliente) {
+    err_t erro = tcp_shutdown(cliente, 0, 1);
+    if (erro != ERR_OK) {
+        tcp_abort(cliente);
+    }
 }
 
 static void montar_json_estado(char *saida, size_t tamanho) {
@@ -156,7 +171,13 @@ static err_t ao_receber(
     }
 
     char requisicao[1024] = {0};
-    pbuf_copy_partial(buffer, requisicao, buffer->tot_len, 0);
+    uint16_t tamanho_requisicao = buffer->tot_len;
+    if (tamanho_requisicao >= sizeof(requisicao)) {
+        tamanho_requisicao = sizeof(requisicao) - 1;
+    }
+
+    pbuf_copy_partial(buffer, requisicao, tamanho_requisicao, 0);
+    tcp_recved(cliente, buffer->tot_len);
     pbuf_free(buffer);
 
     if (strncmp(requisicao, "GET / ", 6) == 0) {
@@ -187,7 +208,7 @@ static err_t ao_receber(
         enviar_resposta(cliente, "text/plain", "Rota nao encontrada");
     }
 
-    tcp_close(cliente);
+    encerrar_cliente(cliente);
     return ERR_OK;
 }
 
