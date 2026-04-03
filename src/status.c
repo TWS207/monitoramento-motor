@@ -1,10 +1,10 @@
 #include "status.h"
 
 temperatura_status_t status_da_temperatura(float temperatura_c) {
-    if (temperatura_c < 50.0f) {
+    if (temperatura_c < 70.0f) {
         return STATUS_NORMAL;
     }
-    if (temperatura_c <= 75.0f) {
+    if (temperatura_c <= 88.0f) {
         return STATUS_CUIDADO;
     }
     return STATUS_CRITICO;
