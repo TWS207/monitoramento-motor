@@ -4,6 +4,7 @@
 #include "hardware/gpio.h"
 #include "pico/stdlib.h"
 
+// Buffer em RAM que representa todos os pixels do display antes do envio por I2C.
 static uint8_t quadro_tela[OLED_WIDTH * OLED_HEIGHT / 8];
 
 // 5x7 font for ASCII 32..90.
@@ -41,11 +42,13 @@ static const uint8_t font5x7[][5] = {
 };
 
 static void ssd1306_write_command(uint8_t comando) {
+    // Envia um comando de controle para o controlador SSD1306.
     uint8_t pacote[2] = {0x00, comando};
     i2c_write_blocking(OLED_I2C, OLED_ADDRESS, pacote, 2, false);
 }
 
 static void ssd1306_set_pixel(uint8_t x, uint8_t y, bool ligado) {
+    // Traduz a coordenada XY para a posição equivalente dentro do framebuffer.
     if (x >= OLED_WIDTH || y >= OLED_HEIGHT) {
         return;
     }
@@ -59,6 +62,7 @@ static void ssd1306_set_pixel(uint8_t x, uint8_t y, bool ligado) {
 }
 
 void ssd1306_init(void) {
+    // Configura o barramento I2C e inicializa o display no modo gráfico 128x64.
     i2c_init(OLED_I2C, 400000);
     gpio_set_function(OLED_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(OLED_SCL_PIN, GPIO_FUNC_I2C);
@@ -82,10 +86,12 @@ void ssd1306_init(void) {
 }
 
 void ssd1306_clear(void) {
+    // Limpa o framebuffer local; o display físico só muda após o present.
     memset(quadro_tela, 0, sizeof(quadro_tela));
 }
 
 void ssd1306_draw_text(uint8_t x, uint8_t y, const char *texto) {
+    // Desenha texto simples usando a fonte 5x7 armazenada no próprio firmware.
     while (*texto != '\0') {
         char caractere = *texto++;
         if (caractere < 32 || caractere > 90) {
@@ -107,6 +113,7 @@ void ssd1306_draw_text(uint8_t x, uint8_t y, const char *texto) {
 }
 
 void ssd1306_draw_rect(uint8_t x, uint8_t y, uint8_t largura, uint8_t altura, bool preenchido) {
+    // Desenha retângulos usados principalmente nas barras do display.
     for (uint8_t deslocamento_x = 0; deslocamento_x < largura; ++deslocamento_x) {
         for (uint8_t deslocamento_y = 0; deslocamento_y < altura; ++deslocamento_y) {
             bool borda =
@@ -122,6 +129,7 @@ void ssd1306_draw_rect(uint8_t x, uint8_t y, uint8_t largura, uint8_t altura, bo
 }
 
 void ssd1306_present(void) {
+    // Transfere o framebuffer completo para o display página por página.
     for (uint8_t pagina = 0; pagina < (OLED_HEIGHT / 8); ++pagina) {
         ssd1306_write_command((uint8_t)(0xB0 + pagina));
         ssd1306_write_command(0x00);

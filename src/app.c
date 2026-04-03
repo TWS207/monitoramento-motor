@@ -10,14 +10,18 @@
 #include "status.h"
 #include "system_state.h"
 
+// Variáveis de comando recebidas da interface local e usadas no loop principal.
 static volatile modo_operacao_t pedir_modo = MODO_MANUAL;
 static volatile bool pedir_motor_habilitado = true;
 static volatile bool velocidade_manual_habilitada = false;
 static volatile float velocidade_manual_percentual = 0.0f;
+
+// Estrutura central com o retrato mais recente do sistema.
 static system_state_t estado_atual;
 
 static void tratar_interrupcao_botao(uint gpio, uint32_t eventos) {
     (void)eventos;
+    // Cada botão altera o modo solicitado para a próxima atualização do sistema.
     if (gpio == BOTAO_A_PIN) {
         pedir_modo = MODO_MANUAL;
     } else if (gpio == BOTAO_B_PIN) {
@@ -26,6 +30,7 @@ static void tratar_interrupcao_botao(uint gpio, uint32_t eventos) {
 }
 
 static void iniciar_botoes(void) {
+    // Configura os botões como entrada com pull-up e habilita interrupção na borda de descida.
     gpio_init(BOTAO_A_PIN);
     gpio_set_dir(BOTAO_A_PIN, GPIO_IN);
     gpio_pull_up(BOTAO_A_PIN);
@@ -39,6 +44,7 @@ static void iniciar_botoes(void) {
 }
 
 static void atualizar_estado_das_entradas(void) {
+    // Lê os valores atuais do joystick e copia tudo para o estado global.
     joystick_data_t leitura_joystick = joystick_read();
 
     estado_atual.eixo_x_bruto = leitura_joystick.eixo_x_bruto;
@@ -62,6 +68,7 @@ static void atualizar_estado_das_entradas(void) {
 }
 
 void app_init(void) {
+    // Inicializa todos os módulos físicos usados pela aplicação.
     stdio_init_all();
     joystick_init();
     outputs_iniciar();
@@ -73,11 +80,12 @@ void app_init(void) {
 }
 
 void app_run_forever(void) {
+    // O loop principal executa leitura, processamento e atuação continuamente.
     while (true) {
         atualizar_estado_das_entradas();
 
         uint32_t ms_atual = to_ms_since_boot(get_absolute_time());
-        // O loop atualiza as saidas locais e a interface a cada iteracao.
+        // Atualiza as saídas físicas e o conteúdo exibido no display.
         outputs_aplicar(&estado_atual, ms_atual);
         display_render(&estado_atual, ms_atual);
 
@@ -86,6 +94,7 @@ void app_run_forever(void) {
 }
 
 void app_pegar_estado(system_state_t *out_estado) {
+    // Permite que outros módulos consultem uma cópia segura do estado atual.
     if (out_estado == NULL) {
         return;
     }
@@ -101,6 +110,7 @@ void app_setar_motor_habilitado(bool habilitado) {
 }
 
 void app_setar_velocidade_manual(float velocidade_percentual) {
+    // Garante que a velocidade remota permaneça no intervalo válido de 0 a 100%.
     if (velocidade_percentual < 0.0f) {
         velocidade_percentual = 0.0f;
     }

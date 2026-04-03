@@ -13,6 +13,7 @@ static uint canal_buzzer;
 static uint16_t limite_buzzer;
 
 static uint16_t percentual_para_nivel(float percentual) {
+    // Converte 0..100% para a resolução usada pelo PWM do motor.
     if (percentual <= 0.0f) {
         return 0;
     }
@@ -23,10 +24,12 @@ static uint16_t percentual_para_nivel(float percentual) {
 }
 
 static void buzzer_setar_habilitado(bool habilitado) {
+    // O buzzer toca com duty fixo quando habilitado e silencia quando desabilitado.
     pwm_set_chan_level(fatia_buzzer, canal_buzzer, habilitado ? (limite_buzzer / 2u) : 0u);
 }
 
 static void outputs_setar_buzzer(temperatura_status_t status, uint32_t ms_atual) {
+    // Cada faixa térmica gera um padrão sonoro diferente de alerta.
     if (status == STATUS_NORMAL) {
         buzzer_setar_habilitado(false);
         return;
@@ -41,6 +44,7 @@ static void outputs_setar_buzzer(temperatura_status_t status, uint32_t ms_atual)
 }
 
 void outputs_iniciar(void) {
+    // Inicializa LEDs, motor e buzzer, todos controlados pela placa.
     gpio_init(LED_VERMELHO_PIN);
     gpio_set_dir(LED_VERMELHO_PIN, GPIO_OUT);
     gpio_init(LED_VERDE_PIN);
@@ -68,16 +72,19 @@ void outputs_iniciar(void) {
 }
 
 void outputs_velocidade_motor(float velocidade_percentual) {
+    // Ajusta o PWM do motor com base na velocidade calculada pelo sistema.
     pwm_set_chan_level(fatia_motor, canal_motor, percentual_para_nivel(velocidade_percentual));
 }
 
 void outputs_set_rgb(temperatura_status_t status) {
+    // O LED RGB indica visualmente a gravidade do estado térmico.
     gpio_put(LED_VERMELHO_PIN, status == STATUS_CRITICO || status == STATUS_CUIDADO);
     gpio_put(LED_VERDE_PIN, status == STATUS_NORMAL || status == STATUS_CUIDADO);
     gpio_put(LED_AZUL_PIN, false);
 }
 
 void outputs_aplicar(const system_state_t *estado, uint32_t ms_atual) {
+    // Aplica todas as saídas físicas a partir do estado consolidado da aplicação.
     outputs_set_rgb(estado->status);
     outputs_setar_buzzer(estado->status, ms_atual);
     outputs_velocidade_motor(estado->motor_habilitado ? estado->velocidade_percentual : 0.0f);
