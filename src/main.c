@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include "pico/stdlib.h"
+#include "app.h"
 
-
-
-int main()
-{
-    
+int main(void) {
+    app_init();
+    app_run_forever();
+    return 0;
 }
