@@ -67,7 +67,6 @@ void app_init(void) {
     outputs_iniciar();
     display_init();
     iniciar_botoes();
-    web_ui_init();
 
     estado_atual.modo = MODO_MANUAL;
     pedir_modo = MODO_MANUAL;
@@ -81,7 +80,6 @@ void app_run_forever(void) {
         // O loop atualiza as saidas locais e a interface a cada iteracao.
         outputs_aplicar(&estado_atual, ms_atual);
         display_render(&estado_atual, ms_atual);
-        web_ui_poll();
 
         sleep_ms(APP_LOOP_DELAY_MS);
     }

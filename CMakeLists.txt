@@ -35,7 +35,15 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(sis-monitoramento sis-monitoramento.c )
+add_executable(sis-monitoramento
+        src/app.c
+        src/joystick.c
+        src/status.c
+        src/outputs.c
+        src/display.c
+        src/ssd1306.c
+        src/main.c
+        )
 
 pico_set_program_name(sis-monitoramento "sis-monitoramento")
 pico_set_program_version(sis-monitoramento "0.1")
@@ -50,18 +58,18 @@ target_link_libraries(sis-monitoramento
 
 # Add the standard include files to the build
 target_include_directories(sis-monitoramento PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/include
 )
 
 # Add any user requested libraries
 target_link_libraries(sis-monitoramento 
-        src/main.c
-        src/app.c
-        src/joystick.c
-        src/status.c
-        src/outputs.c
-        src/display.c
-        src/ssd1306.c
+        pico_stdlib
+        hardware_adc
+        hardware_clocks
+        hardware_gpio
+        hardware_i2c
+        hardware_irq
+        hardware_pwm
         )
 
 pico_add_extra_outputs(sis-monitoramento)
