@@ -13,10 +13,10 @@ temperatura_status_t status_da_temperatura(float temperatura_c) {
 
 float velocidade_automatica_da_temperatura(float temperatura_c) {
     // Define a velocidade do motor automaticamente conforme a temperatura.
-    if (temperatura_c < 50.0f) {
+    if (temperatura_c < 60.0f) {
         return 35.0f;
     }
-    if (temperatura_c <= 75.0f) {
+    if (temperatura_c <= 85.0f) {
         return 65.0f;
     }
     return 100.0f;

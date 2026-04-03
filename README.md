@@ -1,4 +1,4 @@
- `O projeto utiliza a Raspberry Pi Pico W para monitorar temperatura e controlar a velocidade de um motor via joystick. O sistema classifica estados (Normal, Atenção e Crítico), aciona LED RGB e buzzer, e exibe dados em um display OLED com modos manual e automático.`
+`O projeto utiliza a Raspberry Pi Pico W para monitorar temperatura e controlar a velocidade de um motor via joystick. O sistema classifica estados (Normal, Atencao e Critico), aciona LED RGB e buzzer, e exibe dados em um display OLED com modos manual e automatico.`
 
 ## Mapeamento de hardware usado
 
@@ -10,9 +10,7 @@
 - Buzzer onboard: `GPIO21`
 - Joystick: `Y GPIO26/ADC0`, `X GPIO27/ADC1`, `SW GPIO22`
 
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+---
 
 - Eixo Y do joystick: temperatura de `0 a 100 C`
 - Eixo X do joystick: velocidade manual do motor de `0 a 100 %`
@@ -44,38 +42,30 @@
 - `src/display.c`: composicao da tela OLED
 - `src/ssd1306.c`: driver basico do display
 
-
 ## Como usar
 
-1. Grave o firmware na `BITDOGLAB`, conecte o cabo micro USB na sua `BITDOGLAB` e antes de conectar ao computador certifique-se se segurar o botão BOOTSEL atrás da placa, após isso basta dar compilar e rodar o codigo.
+1. Grave o firmware na `BITDOGLAB`, conecte o cabo micro USB na sua `BITDOGLAB` e, antes de conectar ao computador, segure o botao `BOOTSEL` atras da placa. Depois disso, basta compilar e rodar o codigo.
 2. Acompanhe o estado do sistema diretamente no display OLED.
 3. Use os botoes fisicos para alternar entre `MANUAL` e `AUTO`.
 
-                FLUXOGRAMA
-                    |
-                    |
-                    V
+## Fluxograma
 
-[main]
-   |
-   v
-[app_init]
-   |
-   +--> inicia joystick
-   +--> inicia saídas
-   +--> inicia display
-   +--> inicia botões
-   |
-   v
-[loop infinito]
-   |
-   +--> lê joystick
-   +--> atualiza estado atual
-   +--> calcula status e velocidade
-   +--> aplica saídas
-   |     (LED, buzzer, motor)
-   +--> atualiza display
-   +--> espera um tempo
-   |
-   v
-[repete]
+```mermaid
+flowchart TD
+    A[main] --> B[app_init]
+    B --> C[Inicia joystick]
+    B --> D[Inicia saidas]
+    B --> E[Inicia display]
+    B --> F[Inicia botoes]
+    C --> G[Loop principal]
+    D --> G
+    E --> G
+    F --> G
+    G --> H[Le joystick]
+    H --> I[Atualiza estado atual]
+    I --> J[Calcula status e velocidade]
+    J --> K[Aplica saidas<br/>LED, buzzer e motor]
+    K --> L[Atualiza display]
+    L --> M[Espera um tempo]
+    M --> G
+```

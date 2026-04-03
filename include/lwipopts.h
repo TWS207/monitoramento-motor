@@ -10,7 +10,7 @@
 
 // Configurações básicas de memória do lwIP.
 #define MEM_ALIGNMENT                   4
-#define MEM_SIZE                        4000
+#define MEM_SIZE                        8192
 #define MEM_LIBC_MALLOC                 0
 #define MEMP_MEM_MALLOC                 0
 
@@ -25,10 +25,10 @@
 
 // Ajustes básicos do TCP.
 #define TCP_MSS                         1460
-#define TCP_WND                         (8 * TCP_MSS)
-#define TCP_SND_BUF                     (8 * TCP_MSS)
-#define TCP_SND_QUEUELEN                32
-#define MEMP_NUM_TCP_SEG                32
+#define TCP_WND                         (2 * TCP_MSS)
+#define TCP_SND_BUF                     (2 * TCP_MSS)
+#define TCP_SND_QUEUELEN                8
+#define MEMP_NUM_TCP_SEG                16
 #define TCP_LISTEN_BACKLOG              1
 
 // Mantém a configuração mais simples para firmware bare-metal.
