@@ -36,6 +36,6 @@
 #define JOYSTICK_X_ADC_INPUT 1
 
 // Application timing
-#define APP_LOOP_DELAY_MS 100
+#define APP_LOOP_DELAY_MS 10
 #define OLED_LEITURA_MS 250
 #endif

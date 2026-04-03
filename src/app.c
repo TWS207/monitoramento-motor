@@ -9,6 +9,7 @@
 #include "pico/stdlib.h"
 #include "status.h"
 #include "system_state.h"
+#include "web_ui.h"
 
 // Variáveis de comando recebidas da interface local e usadas no loop principal.
 static volatile modo_operacao_t pedir_modo = MODO_MANUAL;
@@ -74,6 +75,7 @@ void app_init(void) {
     outputs_iniciar();
     display_init();
     iniciar_botoes();
+    web_ui_init();
 
     estado_atual.modo = MODO_MANUAL;
     pedir_modo = MODO_MANUAL;
@@ -88,6 +90,7 @@ void app_run_forever(void) {
         // Atualiza as saídas físicas e o conteúdo exibido no display.
         outputs_aplicar(&estado_atual, ms_atual);
         display_render(&estado_atual, ms_atual);
+        web_ui_poll();
 
         sleep_ms(APP_LOOP_DELAY_MS);
     }

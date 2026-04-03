@@ -43,6 +43,7 @@ add_executable(sis-monitoramento
         src/display.c
         src/ssd1306.c
         src/main.c
+        src/web_ui.c
         )
 
 pico_set_program_name(sis-monitoramento "sis-monitoramento")
@@ -64,6 +65,7 @@ target_include_directories(sis-monitoramento PRIVATE
 # Add any user requested libraries
 target_link_libraries(sis-monitoramento 
         pico_stdlib
+        pico_cyw43_arch_lwip_poll
         hardware_adc
         hardware_clocks
         hardware_gpio
