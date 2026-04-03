@@ -24,8 +24,8 @@ void display_init(void) {
     // Mostra uma tela simples de inicialização ao ligar o sistema.
     ssd1306_init();
     ssd1306_clear();
-    ssd1306_draw_text(0, 0, "BITDOGLAB ON");
-    ssd1306_draw_text(0, 16, "INICIALIZANDO");
+    ssd1306_draw_text(0, 0, "   BITDOGLAB ON");
+    ssd1306_draw_text(0, 16, "CARREGANDO...");
     ssd1306_present();
     ultima_varredura_ms = 0;
 }

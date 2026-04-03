@@ -1,4 +1,10 @@
-`O projeto utiliza a Raspberry Pi Pico W para monitorar temperatura e controlar a velocidade de um motor via joystick. O sistema classifica estados (Normal, Atencao e Critico), aciona LED RGB e buzzer, e exibe dados em um display OLED com modos manual e automatico.`
+ `Este projeto roda na BitDogLab/Pico W e faz um monitoramento de temperatura com interface local e web. O sistema lê os valores do joystick/sensor, calcula o estado atual da temperatura, define a velocidade do motor conforme o modo de operação e mostra essas informações no display OLED.`
+
+`Além da parte física, o firmware conecta a placa ao Wi‑Fi e sobe um pequeno servidor HTTP. Esse servidor entrega uma página web leve que mostra, em tempo real, os mesmos dados exibidos no display: temperatura, velocidade, status e modo. O loop principal mantém tudo atualizado continuamente, cuidando das leituras, do display, das saídas e da comunicação de rede.`
+
+## Objetivo
+- O projeto tem como objetivo realizar o monitoramento em tempo real da simulação de um motor, destacando as principais variáveis para garantir um funcionamento seguro e eficiente, especialmente temperatura e velocidade. O sistema oferece duas formas de acompanhamento: localmente, por meio do display da própria placa, permitindo visualização e interação direta com o sistema; e remotamente, através de um servidor HTTP, possibilitando ao operador monitorar o comportamento do motor à distância e identificar alterações no funcionamento.
+
 
 ## Mapeamento de hardware usado
 
@@ -10,7 +16,9 @@
 - Buzzer onboard: `GPIO21`
 - Joystick: `Y GPIO26/ADC0`, `X GPIO27/ADC1`, `SW GPIO22`
 
----
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
 - Eixo Y do joystick: temperatura de `0 a 100 C`
 - Eixo X do joystick: velocidade manual do motor de `0 a 100 %`
@@ -41,31 +49,47 @@
 - `src/outputs.c`: LED RGB, PWM do motor e buzzer
 - `src/display.c`: composicao da tela OLED
 - `src/ssd1306.c`: driver basico do display
+- `src/web_ui.c`: servidor HTTP e configurações de rede, juntamente com `lwipopts.h`
+
 
 ## Como usar
 
-1. Grave o firmware na `BITDOGLAB`, conecte o cabo micro USB na sua `BITDOGLAB` e, antes de conectar ao computador, segure o botao `BOOTSEL` atras da placa. Depois disso, basta compilar e rodar o codigo.
-2. Acompanhe o estado do sistema diretamente no display OLED.
+1. Grave o firmware na `BITDOGLAB`, conecte o cabo micro USB na sua `BITDOGLAB` e antes de conectar ao computador certifique-se se segurar o botão BOOTSEL atrás da placa, após isso basta dar compilar e rodar o codigo.
+2. Acompanhe o estado do sistema diretamente no display OLED ou no Site.
 3. Use os botoes fisicos para alternar entre `MANUAL` e `AUTO`.
+4. Para conectar a placa com a sua rede local vá em `src/web_ui.c` lá você ira se deparar com dois #define, Um WIFI_SSID e nele colocará o nome da Sua rede e logo abaixo WIFI_PASSWORD e nele colocará sua Senha.
+5. Para ter acesso ao seu URL do site, abra o Monitor Serial e Vá na entrada em que sua BitDogLab está Conectada, faça isso antes da Sua Placa Carregar Completamente que lá vai apaecer o link de Acesso
+6. Agora está pronto para fazer o monitoramento!!
 
-## Fluxograma
 
-```mermaid
-flowchart TD
-    A[main] --> B[app_init]
-    B --> C[Inicia joystick]
-    B --> D[Inicia saidas]
-    B --> E[Inicia display]
-    B --> F[Inicia botoes]
-    C --> G[Loop principal]
-    D --> G
-    E --> G
-    F --> G
-    G --> H[Le joystick]
-    H --> I[Atualiza estado atual]
-    I --> J[Calcula status e velocidade]
-    J --> K[Aplica saidas<br/>LED, buzzer e motor]
-    K --> L[Atualiza display]
-    L --> M[Espera um tempo]
-    M --> G
-```
+                FLUXOGRAMA
+                    |
+                    |
+                    V
+
+[Início]
+   ↓
+[Inicializa sistema]
+ (Wi-Fi, sensores, display, servidor HTTP)
+   ↓
+[Conecta ao Wi-Fi]
+   ↓
+[Inicia servidor web]
+   ↓
+[Loop principal]
+   ↓
+[Leitura dos sensores]
+ (Temperatura e Velocidade)
+   ↓
+[Atualiza estado do sistema]
+   ↓
+[Define status]
+ (NORMAL / ATENÇÃO / CRÍTICO)
+   ↓
+[Atualiza display da placa]
+   ↓
+[Atualiza dados para servidor HTTP]
+   ↓
+[Retorna resposta ao cliente]
+   ↓
+(Volta para o loop)
