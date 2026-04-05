@@ -51,6 +51,26 @@
 - `src/ssd1306.c`: driver basico do display
 - `src/web_ui.c`: servidor HTTP e configurações de rede, juntamente com `lwipopts.h`
 
+## Bibiliotecas Utilizadas
+
+- pico/stdlib.h 
+- hardware/adc.h
+- hardware/gpio.h
+- hardware/pwm.h
+- hardware/i2c.h
+- hardware/clocks.h
+- hardware/irq.h
+- pico/time.h
+- pico/cyw43_arch.h
+- lwip/tcp.h
+- lwip/pbuf.h
+- lwip/ip4_addr.h
+- lwip/netif.h
+- stdio.h
+- string.h
+- stdbool.h
+- stdint.h
+
 
 ## Como usar
 
